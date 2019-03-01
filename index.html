@@ -78,7 +78,7 @@
             e.preventDefault()
             let name = select('name-text')
             if (name.value) {
-                socket.emit('user-online', name.value)
+                socket.emit('user-introduction', name.value)
                 deleteNodeFrom('app', select('nickname'))
                 let chat = select('chat')
                 chat.className = 'grid'

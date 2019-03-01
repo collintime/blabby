@@ -47,7 +47,7 @@ let getSockets = async (server) => {
 
 let givenTwoOnlineUsers = async (server) => {
   let sockets = await getSockets(server)
-  sockets.forEach((s, i) => s.emit('user-online', `user-${i}`))
+  sockets.forEach((s, i) => s.emit('user-introduction', `user-${i}`))
   return sockets
 }
 

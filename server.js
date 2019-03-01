@@ -24,10 +24,10 @@ const io = sockets(server)
 let users = new Map()
 
 module.exports = {
-  start: async (port = 3000) => {
+  start: async (port) => {
     return new Promise((resolve, reject) => {
       io.on('connection', client => {
-        client.on('user-online', name => {
+        client.on('user-introduction', name => {
           users.set(client.id, { name, id: client.id })
           io.to(client.id).emit('user-list', Array.from(users.values()))
           io.emit('user-online', users.get(client.id))
@@ -53,7 +53,7 @@ module.exports = {
         if (err) {
           return reject(err)
         }
-        console.log('server started at port 3000')
+        console.log(`server started at port ${port}`)
         return resolve({
           http: server,
           io
