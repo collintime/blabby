@@ -1,0 +1,30 @@
+{
+  "name": "blabby",
+  "version": "0.0.1",
+  "description": "javascript chat app with basic features and minimal dependencies",
+  "main": "index.js",
+  "scripts": {
+    "test": "tap test.js",
+    "start": "node ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/collintime/blabby.git"
+  },
+  "keywords": [
+    "chat",
+    "message",
+    "socket.io",
+    "node",
+    "javascript"
+  ],
+  "author": "cyablon",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/collintime/blabby/issues"
+  },
+  "homepage": "https://github.com/collintime/blabby#readme",
+  "dependencies": {
+    "socket.io": "^2.2.0"
+  }
+}
