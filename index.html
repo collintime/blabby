@@ -6,9 +6,101 @@
 
 <body>
     <h1>Welcome to Blabby</h1>
+    <div id="app">
+        <div id="nickname" class="col-one">
+            <form>
+                <label>
+                    Nickname
+                    <input id="name-text" type="text" />
+                </label>
+                <button id="start-btn" onclick="">Start Chatting</button>
+            </form>
+        </div>
+        <div id="chat" class="hide">
+            <div id="online-users">
+                <div id="current-nickname"></div>
+                Online Users:
+                <ul id="users"></ul>
+            </div>
+            <div class="col-one">
+                <ul id="messages"></ul>
+                <form>
+                    <input id="msg-text" type="textarea" col="80"/>
+                    <button id="send-btn" onclick="">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #chat {
+            grid-template-columns: 75% 25%;
+            grid-template-rows: 10% 80% 10%;
+        }
+        #online-users {
+            grid-column-start: 2;
+        }
+        #col-one {
+            grid-column-start: 1;
+        }
+        .hide {
+            display: none;
+        }
+        .grid {
+            display: grid;
+        }
+    </style>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         let socket = io()
+
+        const element = (type, props) => {
+            let node = document.createElement(type)
+            return Object.assign(node, props)
+        }
+
+        const li = (props) => element('li', props)
+        const p = (props) => element('p', props)
+        const select = (id) => document.getElementById(id)
+        const appendNodeTo = (id, child) => select(id).appendChild(child)
+        const deleteNodeFrom = (id, child) => select(id).removeChild(child)
+
+        document.getElementById('send-btn').onclick = (e) => {
+            e.preventDefault()
+            let message = select('msg-text')
+            if (message.value) {
+                socket.emit('user-message', message.value)
+                message.value = ''
+            }
+        }
+
+        document.getElementById('start-btn').onclick = (e) => {
+            e.preventDefault()
+            let name = select('name-text')
+            if (name.value) {
+                socket.emit('user-online', name.value)
+                deleteNodeFrom('app', select('nickname'))
+                let chat = select('chat')
+                chat.className = 'grid'
+                appendNodeTo('current-nickname', p({innerText: 'Nickname: ' + name.value}))
+            }
+        }
+
+        let addUserToList = (user) => {
+            let existingNode = document.getElementById(user.id)
+            if (!existingNode) {
+                appendNodeTo('users', li({ innerText: user.name, id: user.id }))
+            }
+        }
+        const appendMessageToChat = (message) => {
+            let node = li({innerText: message})
+            appendNodeTo('messages', node)
+        }
+
+        socket.on('user-online', (user) => addUserToList(user))
+        socket.on('user-offline', (user) => deleteNodeFrom('users', select(user.id)))
+        socket.on('user-message', (payload) => appendMessageToChat(payload.user.name + ' : ' + payload.message))
+        socket.on('user-list', (users) => users.forEach(addUserToList))
     </script>
 </body>
 
