@@ -4,7 +4,7 @@
   "description": "javascript chat app with basic features and minimal dependencies",
   "main": "index.js",
   "scripts": {
-    "test": "tap test.js",
+    "test": "tap test.js --coverage-report=text",
     "start": "node ./index.js",
     "lint": "eslint ./index.js --fix"
   },

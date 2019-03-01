@@ -62,7 +62,7 @@ module.exports = {
     })
   },
   stop: async () => {
-    // timeout?
+    // timeouts?
     return new Promise((resolve) => {
       io.close(() => {
         console.log('io stopped')

@@ -17,24 +17,25 @@ const getUrl = (s) => {
   return `http://[${address}]:${port}`
 }
 
-tap.test('http handler', test => {
-  server.start()
-    .then(s => {
-      http.get(getUrl(s), res => {
-        test.equal(res.statusCode, 200, 'it should return 200')
-        test.equal(res.headers['content-type'], 'text/html', 'it should return html')
-        return server.stop().then(() => test.end())
-        // test.end()
-      })
+const executeGetRequest = async (url) => {
+  return new Promise(resolve => {
+    http.get(url, res => {
+      return resolve(res)
     })
+  })
+}
+
+tap.test('http handler', async test => {
+  let s = await server.start()
+  let res = await executeGetRequest(getUrl(s))
+  test.equal(res.statusCode, 200, 'it should return 200')
+  test.equal(res.headers['content-type'], 'text/html', 'it should return html')
+  await server.stop()
+  test.end()
 })
 
 let socketFactory = async (url) => {
-  let socket = io.connect(url, {
-    'reconnection delay': 0,
-    'reopen delay': 0,
-    'force new connection': true
-  })
+  let socket = io.connect(url)
   await pEvent(socket, 'connect')
   return socket
 }
