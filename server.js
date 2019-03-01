@@ -21,12 +21,32 @@ const handler = (req, res) => {
 
 const server = http.createServer(handler)
 const io = sockets(server)
+let users = new Map()
 
 module.exports = {
   start: async (port = 3000) => {
     return new Promise((resolve, reject) => {
       io.on('connection', client => {
-        console.log('connected')
+        client.on('user-online', name => {
+          users.set(client.id, { name, id: client.id })
+          io.to(client.id).emit('user-list', Array.from(users.values()))
+          io.emit('user-online', users.get(client.id))
+        })
+
+        client.on('user-message', data => {
+          let user = users.get(client.id)
+          if (user) {
+            io.emit('user-message', { user, message: data, timestamp: Date.now() })
+          }
+        })
+
+        client.on('disconnect', () => {
+          if (users.has(client.id)) {
+            let user = users.get(client.id)
+            io.emit('user-offline', user)
+            users.delete(client.id)
+          }
+        })
       })
 
       server.listen(3000, err => {
@@ -41,10 +61,16 @@ module.exports = {
       })
     })
   },
-  stop: () => {
-    // lingering connections?
-    io.close()
-    server.close()
-    console.log('server stopped')
+  stop: async () => {
+    // timeout?
+    return new Promise((resolve) => {
+      io.close(() => {
+        console.log('io stopped')
+        server.close(() => {
+          console.log('http stopped')
+          return resolve()
+        })
+      })
+    })
   }
 }

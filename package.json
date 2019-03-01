@@ -35,6 +35,7 @@
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
+    "p-event": "^2.3.1",
     "tap": "^12.5.3"
   }
 }
